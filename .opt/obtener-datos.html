@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Obtener Datos</title>
+    <style>
+        body{
+            margin: auto;
+        }
+        div {
+            margin: auto;
+        }
+    </style>
+</head>
+<body>
+<h1 align="center">Lista de correos obtenida de un fichero xml ...</h1>
+<h2 align="center">Lista Correos electronicos</h2><br>
+<div align="center">
+<form name="fusers" id="usr" >
+    <input type="button" name="see_list" id="see_list" value="ver lista" onClick='see()'/></br>
+    <div style="display:none" id="div_list">
+    <select name="lista" id="lista" ></select></br>
+    </div>
+    Escribe un mail de los que aparecen en la lista
+    </br><input type="text" name="email" id="email" placeholder="Introducir email"/></br>
+    <input type="text" disabled name="nombre" id="nombre" placeholder="nombre"/></br>
+    <input type="text" disabled name="apellidos" id="apellidos" placeholder="apellidos"/></br>
+    <input type="text" disabled name="telefono" id="telefono" placeholder="telefono"/></br></br>
+    <input type="button" name="find" id="find" value="buscar" onClick='finder()'/>
+    <input type="reset" nama="reset" id="reset" value="limpiar"/>
+</form>
+</div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script type="text/javascript">
+    $(document).ready(function() {
+        $.get("../front-end/.Users/xml/usuarios.xml", function(d){
+            var listacorreos = $(d).find('email');
+
+            for (var i = 0; i < listacorreos.length; i++)
+            {
+                $('#lista').append($('<option>',{
+                    value: listacorreos[i].childNodes[0].nodeValue,
+                    text: listacorreos[i].childNodes[0].nodeValue
+                }));
+            }
+        })
+    });
+
+    function see() {
+            alert("lista accesible");
+            $('#div_list').attr('style', '');
+        }
+
+    function finder() {
+        var path = "../front-end/.Users/xml/usuarios.xml";
+        $.get(path, function (data, status) {
+            var $email = $('#email').val();
+            var listacorreos = $(data).find('email');
+            for (var i = 0; i < listacorreos.length; i++) {
+                var $value = listacorreos[i].childNodes[0].nodeValue;
+                if ($email === $value) {
+                    alert("encontrado");
+                    $('#nombre').val(xmlFinder(data, 'nombre', i));
+                    $('#apellidos').val(xmlFinder(data, 'apellido1', i) + ' ' + xmlFinder(data, 'apellido2', i));
+                    $('#telefono').val(xmlFinder(data, 'telefono', i));
+                    return exit(0);
+                }
+            }
+            alert("No encontrado");
+            $('#reset').click();
+        })
+    }
+
+
+
+
+    function xmlFinder(data, e, pos) {
+        var lista = $(data).find(e);
+        var $value = lista[pos].childNodes[0].nodeValue;
+        return $value;
+    }
+
+
+</script>
+</body>
+</html>
+
+
